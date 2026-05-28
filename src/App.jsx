@@ -68,6 +68,28 @@ Réagis comme un vrai être humain, pas comme un expert:
 - Qu'est-ce qui te ferait sortir ta carte immédiatement sans réfléchir?
 
 Conclus avec: J'ACHÈTE / J'HÉSITE / JE PASSE — et une raison en une phrase. Réponds en français, style naturel et direct, 4-5 phrases.`
+  },
+  {
+    id: "prompt",
+    name: "PROMPT MASTER",
+    role: "Génère le prompt Midjourney corrigé",
+    color: "#ff9900",
+    icon: "⌘",
+    getPrompt: (type) => `Tu es un expert Midjourney 6.1 spécialisé dans l'art cyberpunk. Tu analyses une image destinée à RBL//CØRE (shop cyberpunk belge, palette cyan #00e5ff / magenta #cc00ff / fond #050810).
+
+Cette image est prévue comme ${type === 'toile' ? 'TOILE CANVAS (70-100€)' : 'T-SHIRT PREMIUM (30-45€)'}.
+
+Analyse l'image et génère UN prompt Midjourney 6.1 amélioré qui:
+1. Conserve les éléments forts de l'image originale
+2. Corrige les éléments faibles ou génériques
+3. Renforce l'identité RBL//CØRE (cyberpunk, techno, sombre, glitch)
+4. Est prêt à coller directement dans Midjourney
+
+Format de réponse STRICT:
+- 2 phrases max d'explication de ce que tu as changé et pourquoi
+- Puis le prompt complet entre triple backticks, finissant par --ar 2:3 --style raw --q 2 --v 6.1
+
+Réponds en français pour l'explication, le prompt en anglais.`
   }
 ];
 
@@ -113,11 +135,11 @@ export default function RBLConsensusV2() {
     if (!imageData || !productType) return;
     setLoading(l => ({ ...l, [agent.id]: true }));
     try {
-      const res = await fetch("/api/claude", {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-5",
+          model: "claude-sonnet-4-20250514",
           max_tokens: 1000,
           system: agent.getPrompt(productType),
           messages: [{
@@ -149,11 +171,11 @@ export default function RBLConsensusV2() {
     const allReviews = AGENTS.map(a => `[${a.name}]: ${reviews[a.id] || "Pas d'avis"}`).join("\n\n");
     setLoadingConsensus(true);
     try {
-      const res = await fetch("/api/claude", {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-5",
+          model: "claude-sonnet-4-20250514",
           max_tokens: 1000,
           messages: [{ role: "user", content: getConsensusPrompt(productType, allReviews) }]
         })
