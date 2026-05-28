@@ -113,7 +113,7 @@ export default function RBLConsensusV2() {
     if (!imageData || !productType) return;
     setLoading(l => ({ ...l, [agent.id]: true }));
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/claude", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -149,7 +149,7 @@ export default function RBLConsensusV2() {
     const allReviews = AGENTS.map(a => `[${a.name}]: ${reviews[a.id] || "Pas d'avis"}`).join("\n\n");
     setLoadingConsensus(true);
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/claude", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
